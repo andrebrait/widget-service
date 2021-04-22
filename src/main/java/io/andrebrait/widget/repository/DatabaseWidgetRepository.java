@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 @Profile("sql")
-public interface SqlWidgetRepository extends WidgetRepository, JpaRepository<Widget, UUID> {
+public interface DatabaseWidgetRepository extends JpaRepository<Widget, UUID> {
 
 }

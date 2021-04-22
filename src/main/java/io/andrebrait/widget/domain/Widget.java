@@ -1,15 +1,19 @@
 package io.andrebrait.widget.domain;
 
-import io.andrebrait.widget.rtree.Rectangle;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import java.math.BigInteger;
 import java.util.UUID;
 
 /**
@@ -29,10 +33,15 @@ import java.util.UUID;
         }
 )
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Widget {
+@NoArgsConstructor
+@Builder(toBuilder = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true,
+        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY)
+public class Widget implements IdentifiableRectangle {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false, updatable = false, unique = true)
     @EqualsAndHashCode.Include
     private UUID id;
@@ -41,11 +50,21 @@ public class Widget {
     @Column(name = "Y", nullable = false)
     private long y;
     @Column(name = "Z", nullable = false, unique = true)
-    private long z;
-    @Min(value = 1, message = "'width' must be greater than or equal to {value}")
+    private BigInteger z;
+    @Positive
     @Column(name = "WIDTH", nullable = false)
     private long width;
-    @Min(value = 1, message = "'height' must be greater than or equal to {value}")
+    @Positive
     @Column(name = "HEIGHT", nullable = false)
     private long height;
+
+    @Override
+    public long getX2() {
+        return x + width;
+    }
+
+    @Override
+    public long getY2() {
+        return y + height;
+    }
 }
